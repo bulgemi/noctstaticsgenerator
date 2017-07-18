@@ -17,7 +17,7 @@ def create_excel():
     chart = workbook.add_chart({'type': 'column'})
     chart.set_title({'name': u'일별 처리 건수'})
     chart.set_legend({'none': True})
-    chart.set_size({'width': 720, 'height': 576})
+    chart.set_size({'width': 1200, 'height': 600})
     chart_categories = [u'통계 요약', ]
     chart_values = [u'통계 요약', ]
 
@@ -45,7 +45,7 @@ def create_excel():
 
         worksheet_sum.write_string(0, column_index, v[0], header_format)
         worksheet_sum.set_column(0, column_index, 20)
-#        print(len(v), v)
+    #        print(len(v), v)
 
     column_index += 1
     worksheet_sum.write_string(0, column_index, u'총 처리건수', header_format)
@@ -58,7 +58,7 @@ def create_excel():
     worksheet_sum.write_string(1, column_index, u'처리건수', header_format)
 
     for v in data:
-        daysum=0
+        daysum = 0
 
         if len(v) < 50:
             break
@@ -75,14 +75,14 @@ def create_excel():
 
             cycledata = re.split(',', c)
             daysum += int(cycledata[2])
-            print(c)
+#            print(c)
 
         worksheet_sum.write(1, column_index, daysum, number_format)
         total_sum += daysum
 
-    total_avg = total_sum/(len(data)-1)
+    total_avg = total_sum / (len(data) - 1)
 
-    #차트 카테고리 생생
+    # 차트 카테고리 생생
     chart_categories.append(0)
     chart_categories.append(1)
     chart_categories.append(0)
@@ -92,7 +92,7 @@ def create_excel():
     chart_values.append(1)
     chart_values.append(column_index)
 
-    #차트 생성
+    # 차트 생성
     chart.add_series({'categories': chart_categories,
                       'values': chart_values,
                       })
@@ -103,6 +103,25 @@ def create_excel():
     worksheet_sum.write(1, column_index, total_sum, number_format)
     column_index += 1
     worksheet_sum.write(1, column_index, total_avg, number_format)
+
+    # 통계 상세 타이틀
+    column_index = 0
+    worksheet.write_string(0, column_index, u'일자', header_format)
+    worksheet.set_column(0, column_index, 20)
+    cycleinfolist = data[0]
+
+    for cycleinfo in cycleinfolist:
+        cycleinfo_yn = re.findall(',', cycleinfo)
+
+        if len(cycleinfo_yn) == 0:
+            continue
+
+        column_index += 1
+
+        cycle_time_list = re.split(',', cycleinfo)
+        cycle_time = cycle_time_list[0] + "(" + cycle_time_list[1] + ")"
+        worksheet.write_string(0, column_index, cycle_time, header_format)
+        worksheet.set_column(0, column_index, 20)
 
     workbook.close()
 
@@ -123,7 +142,7 @@ if __name__ == "__main__":
             break
 
 #    print(data)
-    print(len(data))
+#    print(len(data))
 
     statfile.close()
     create_excel()
